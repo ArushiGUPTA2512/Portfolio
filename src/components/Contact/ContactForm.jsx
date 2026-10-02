@@ -1,278 +1,111 @@
-import React, { useRef } from "react";
-import emailjs from "@emailjs/browser";
-import { motion } from "motion/react";
-
-import {
-  EMAIL_PUBLIC_KEY,
-  EMAIL_SERVICE_ID,
-  EMAIL_TEMPLATE_ID,
-} from "../../config/emailConfig";
+import React, { useState } from "react";
+import { HiOutlineMail } from "react-icons/hi";
 
 const ContactForm = () => {
-  const form = useRef();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
 
-  const sendEmail = (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    emailjs
-      .sendForm(
-        EMAIL_SERVICE_ID,
-        EMAIL_TEMPLATE_ID,
-        form.current,
-        EMAIL_PUBLIC_KEY
-      )
-      .then(() => {
-        toast.success("Message sent successfully!");
+    const subject = `Portfolio Contact from ${formData.name}`;
 
-        form.current.reset();
-      })
-      .catch((error) => {
-        console.log(error);
+    const body = `
+Name: ${formData.name}
+Email: ${formData.email}
 
-        toast.error("Failed to send message.");
-      });
+Message:
+${formData.message}
+    `;
+
+    const mailtoLink = `mailto:your-email@gmail.com?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
+
+    window.location.href = mailtoLink;
   };
 
   return (
-    <div
-      className="
-      relative
-      overflow-hidden
-      rounded-[32px]
-      border
-      border-white/10
-      bg-white/5
-      p-10
-      backdrop-blur-2xl
-      "
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
     >
-      {/* Background Glow */}
+      {/* Name */}
 
-      <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-amber-400/10 blur-[90px]" />
+      <div className="mb-6">
+        <label className="mb-2 block text-sm font-medium text-gray-300">
+          Your Name
+        </label>
 
-      <h2 className="mb-8 text-4xl font-bold text-white">
-        Send Message
-      </h2>
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+          placeholder="Enter your name"
+          className="w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-4 text-white outline-none transition focus:border-amber-400"
+        />
+      </div>
 
-      <form
-        ref={form}
-        onSubmit={sendEmail}
-        className="space-y-6"
+      {/* Email */}
+
+      <div className="mb-6">
+        <label className="mb-2 block text-sm font-medium text-gray-300">
+          Email Address
+        </label>
+
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          placeholder="Enter your email"
+          className="w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-4 text-white outline-none transition focus:border-amber-400"
+        />
+      </div>
+
+      {/* Message */}
+
+      <div className="mb-6">
+        <label className="mb-2 block text-sm font-medium text-gray-300">
+          Message
+        </label>
+
+        <textarea
+          name="message"
+          value={formData.message}
+          onChange={handleChange}
+          required
+          rows="6"
+          placeholder="Write your message..."
+          className="w-full resize-none rounded-xl border border-white/10 bg-slate-900/60 px-4 py-4 text-white outline-none transition focus:border-amber-400"
+        />
+      </div>
+
+      {/* Submit */}
+
+      <button
+        type="submit"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 px-6 py-4 font-semibold text-black transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(245,158,11,0.35)]"
       >
-        {/* Name */}
-
-        <div className="relative">
-          <input
-            type="text"
-            name="user_name"
-            placeholder=" "
-            required
-            className="
-            peer
-            w-full
-            rounded-2xl
-            border
-            border-white/10
-            bg-white/5
-            px-5
-            pt-7
-            pb-3
-            text-white
-            outline-none
-            transition-all
-            duration-300
-            focus:border-amber-400
-            focus:shadow-[0_0_20px_rgba(245,158,11,0.15)]
-            "
-          />
-
-          <label
-            className="
-            absolute
-            left-5
-            top-4
-            text-gray-400
-            transition-all
-            duration-300
-            peer-placeholder-shown:top-5
-            peer-placeholder-shown:text-base
-            peer-focus:top-2
-            peer-focus:text-xs
-            peer-focus:text-amber-400
-            "
-          >
-            Name
-          </label>
-        </div>
-
-        {/* Email */}
-
-        <div className="relative">
-          <input
-            type="email"
-            name="user_email"
-            placeholder=" "
-            required
-            className="
-            peer
-            w-full
-            rounded-2xl
-            border
-            border-white/10
-            bg-white/5
-            px-5
-            pt-7
-            pb-3
-            text-white
-            outline-none
-            transition-all
-            duration-300
-            focus:border-amber-400
-            focus:shadow-[0_0_20px_rgba(245,158,11,0.15)]
-            "
-          />
-
-          <label
-            className="
-            absolute
-            left-5
-            top-4
-            text-gray-400
-            transition-all
-            duration-300
-            peer-placeholder-shown:top-5
-            peer-placeholder-shown:text-base
-            peer-focus:top-2
-            peer-focus:text-xs
-            peer-focus:text-amber-400
-            "
-          >
-            Email
-          </label>
-        </div>
-
-        {/* Subject */}
-
-        <div className="relative">
-          <input
-            type="text"
-            name="subject"
-            placeholder=" "
-            required
-            className="
-            peer
-            w-full
-            rounded-2xl
-            border
-            border-white/10
-            bg-white/5
-            px-5
-            pt-7
-            pb-3
-            text-white
-            outline-none
-            transition-all
-            duration-300
-            focus:border-amber-400
-            focus:shadow-[0_0_20px_rgba(245,158,11,0.15)]
-            "
-          />
-
-          <label
-            className="
-            absolute
-            left-5
-            top-4
-            text-gray-400
-            transition-all
-            duration-300
-            peer-placeholder-shown:top-5
-            peer-placeholder-shown:text-base
-            peer-focus:top-2
-            peer-focus:text-xs
-            peer-focus:text-amber-400
-            "
-          >
-            Subject
-          </label>
-        </div>
-
-        {/* Message */}
-
-        <div className="relative">
-          <textarea
-            rows="6"
-            name="message"
-            placeholder=" "
-            required
-            className="
-            peer
-            w-full
-            resize-none
-            rounded-2xl
-            border
-            border-white/10
-            bg-white/5
-            px-5
-            pt-7
-            pb-3
-            text-white
-            outline-none
-            transition-all
-            duration-300
-            focus:border-amber-400
-            focus:shadow-[0_0_20px_rgba(245,158,11,0.15)]
-            "
-          />
-
-          <label
-            className="
-            absolute
-            left-5
-            top-4
-            text-gray-400
-            transition-all
-            duration-300
-            peer-placeholder-shown:top-5
-            peer-placeholder-shown:text-base
-            peer-focus:top-2
-            peer-focus:text-xs
-            peer-focus:text-amber-400
-            "
-          >
-            Message
-          </label>
-        </div>
-
-        {/* Button */}
-
-        <motion.button
-          type="submit"
-          whileHover={{
-            scale: 1.02,
-            y: -2,
-          }}
-          whileTap={{
-            scale: 0.98,
-          }}
-          className="
-          w-full
-          rounded-2xl
-          bg-gradient-to-r
-          from-amber-400
-          to-orange-500
-          py-4
-          font-semibold
-          text-black
-          transition-all
-          duration-300
-          hover:shadow-[0_0_30px_rgba(245,158,11,0.35)]
-          "
-        >
-          Send Message →
-        </motion.button>
-      </form>
-    </div>
+        Send Message
+        <HiOutlineMail size={20} />
+      </button>
+    </form>
   );
 };
 
